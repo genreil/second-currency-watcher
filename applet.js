@@ -189,7 +189,7 @@ MyApplet.prototype = {
                 // Main.Util.spawnCommandLine("notify-send -i dialog-information 'Currency Watcher: rate is ---------" + current_rate + " --- " + this.previous_rate + "----------'");
                 
                 // update UI only if rate changed:
-                if ( current_rate != this.previous_rate ) {
+                if ( current_rate !== this.previous_rate ) {
                     // set previous rate:
                     this.previous_rate = current_rate;
                     this.configs.set_double('previous-rate', this.previous_rate);
