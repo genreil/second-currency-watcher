@@ -144,24 +144,24 @@ MyApplet.prototype = {
 
         this.load_json_async(this.convertion_url(), function(data) {
             // extract current rate:
-            
+
             // The old for http://rate-exchange.appspot.com/...:
             // let current_rate = parseFloat(body.toString().replace( /^\D+/g, '').replace( /\D+$/g, '').substring(0,6)).toFixed(3);
-            
+
             // For http://www.webservicex.net/CurrencyConvertor.asmx...:
             // let current_rate = parseFloat(body.toString().match(/>(.*)<\//)[1]).toFixed(4);
 
             // For http://query.yahooapis.com/v1/public/yql?...:
             // parseExchangeRate is returned by the yahoo api.
             // select * from yahoo.finance.xchange where pair in ("USDILS")
-            
+
             // let current_rate = eval(body);
-            
+
             let rate_pos_from = 16;
             let rate_pos_to = 25;
-            let current_rate = parseFloat(data.substring(rate_pos_from, rate_pos_to));
+            let current_rate = parseFloat(data.substring(rate_pos_from, rate_pos_to)); // For testing: Math.floor(Math.random() * 10);
             if ( !isNaN(current_rate) ) {
-                
+
                 // find direction of the rate change:
                 let current_up_down = '';
                 if ( current_rate < this.previous_rate ) {
@@ -176,28 +176,28 @@ MyApplet.prototype = {
                 else {
                     // Main.Util.spawnCommandLine("notify-send -i dialog-information 'Currency Watcher: rate is ---------" + current_rate + "----------'");
                 }
-                
+
                 // update UI only if direction changed:
                 // if you remove the (current_up_down != '') condition, you will see '->' arrow in case of no rate change.
-                if ( this.previous_rate != 0.0 && current_up_down != this.previous_up_down && current_up_down != '' ) {
+                if ( this.previous_rate !== 0.0 && current_up_down !== this.previous_up_down ) {
                     // Main.Util.spawnCommandLine("notify-send -i dialog-information 'Currency Watcher: rate is " + current_up_down + "!!!!!'");
                     this.set_applet_icon_path(AppletDirectory + '/icons/arrow' + current_up_down + '.png');
                     // set previous direction:
                     this.previous_up_down = current_up_down;
-                    this.configs.set_string('previous-up-down', this.previous_up_down);
+                    if ( this.previous_up_down !== '' ) {
+                      this.configs.set_string('previous-up-down', this.previous_up_down);
+                    }
                 }
+
                 // Main.Util.spawnCommandLine("notify-send -i dialog-information 'Currency Watcher: rate is ---------" + current_rate + " --- " + this.previous_rate + "----------'");
-                
+
                 // update UI only if rate changed:
                 if ( current_rate !== this.previous_rate ) {
+                    // Main.Util.spawnCommandLine("notify-send -i dialog-information '!!!!!!!!! " + current_rate + " --- " + this.previous_rate + "----------'");
                     // set previous rate:
                     this.previous_rate = current_rate;
                     this.configs.set_double('previous-rate', this.previous_rate);
-                    
-                    if ( current_rate.toFixed(4) !== this.previous_rate.toFixed(4) ) {
-                        this.set_applet_label(current_rate.toFixed(4));
-                    }
-
+                    this.set_applet_label(current_rate.toFixed(4));
                 }
             }
         });
